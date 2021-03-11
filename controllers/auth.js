@@ -1,20 +1,20 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-const { SECRET_KEY, SECRET_TTL } = require('../config');
-const User = require('../models/user');
+const { SECRET_KEY, SECRET_TTL } = require("../config");
+const User = require("../models/user");
 
-const { BadRequestError, ConflictError } = require('../errors');
+const { BadRequestError, ConflictError } = require("../errors");
 
 module.exports.createUser = (req, res, next) => {
   // eslint-disable-next-line object-curly-newline
-  const { name, about, avatar, email, password } = req.body;
+  const { name, email, password } = req.body;
 
   User.findOne({ email })
     .then((user) => {
       if (user) {
         throw new ConflictError(
-          'Пользователь с указанным E-Mail уже зарегистрирован',
+          "Пользователь с указанным E-Mail уже зарегистрирован"
         );
       }
 
@@ -23,19 +23,17 @@ module.exports.createUser = (req, res, next) => {
         .then((hash) => {
           User.create({
             name,
-            about,
-            avatar,
             email,
             password: hash,
           });
         })
         .then((createdUser) => res.status(200).send({ data: createdUser }))
         .catch((err) => {
-          if (err.name === 'ValidationError') {
+          if (err.name === "ValidationError") {
             next(
               new BadRequestError(
-                `Введенные данные не прошли валидацию: ${err.message}`,
-              ),
+                `Введенные данные не прошли валидацию: ${err.message}`
+              )
             );
           }
 

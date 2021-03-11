@@ -18,7 +18,7 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { NotFoundError } = require("./errors");
 const { allowedCors, DEFAULT_PORT } = require("./config");
 
-mongoose.connect("mongodb://localhost:27017/bitfilmsdb", {
+mongoose.connect("mongodb://localhost:27017/moviehunterdb", {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
