@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -18,7 +19,8 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { NotFoundError } = require("./errors");
 const { allowedCors, DEFAULT_PORT } = require("./config");
 
-mongoose.connect("mongodb://localhost:27017/moviehunterdb", {
+// mongoose.connect("mongodb://localhost:27017/moviehunterdb", {
+mongoose.connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -37,7 +39,7 @@ app.options("*", (req, res) => {
 
 app.use((req, res, next) => {
   const { origin } = req.headers;
-  if (allowedCors.includes(origin)) {
+  if (ALLOWED_CORS.includes(origin)) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
