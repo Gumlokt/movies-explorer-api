@@ -1,19 +1,19 @@
-require("dotenv").config();
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-const helmet = require("helmet");
-const rateLimiter = require("./middlewares/rateLimiter");
+const helmet = require('helmet');
+const rateLimiter = require('./middlewares/rateLimiter');
 
-const { APP_PORT, DB_URL } = require("./config");
+const { APP_PORT, DB_URL } = require('./config');
 
-const routes = require("./routes");
+const routes = require('./routes');
 
-const errorHandler = require("./middlewares/errorHandler");
+const errorHandler = require('./middlewares/errorHandler');
 
-const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { corsOptions, cors } = require("./middlewares/cors");
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { corsOptions, cors } = require('./middlewares/cors');
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
@@ -27,7 +27,7 @@ const app = express();
 app.use(rateLimiter);
 app.use(helmet());
 
-app.options("*", corsOptions);
+app.options('*', corsOptions);
 app.use(cors);
 
 app.use(bodyParser.json());
@@ -44,6 +44,7 @@ app.use(errorLogger);
 // централизованный обработчик ошибок
 app.use(errorHandler);
 
-app.listen(APP_PORT, () => {
-  console.log(`App listening on port ${APP_PORT}`);
-});
+app.listen(APP_PORT);
+// app.listen(APP_PORT, () => {
+//   console.log(`App listening on port ${APP_PORT}`);
+// });

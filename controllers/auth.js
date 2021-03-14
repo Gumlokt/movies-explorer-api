@@ -1,10 +1,12 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const { SECRET_KEY, SECRET_TTL } = require("../config");
-const User = require("../models/user");
+const { SECRET_KEY, SECRET_TTL } = require('../config');
+const messages = require('../config/messages');
 
-const { BadRequestError, ConflictError } = require("../errors");
+const User = require('../models/user');
+
+const { BadRequestError, ConflictError } = require('../errors');
 
 module.exports.createUser = (req, res, next) => {
   const { name, email, password } = req.body;
@@ -12,9 +14,7 @@ module.exports.createUser = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ConflictError(
-          "Пользователь с указанным E-Mail уже зарегистрирован"
-        );
+        throw new ConflictError(messages.emailAlreadyExists);
       }
 
       bcrypt
@@ -28,11 +28,11 @@ module.exports.createUser = (req, res, next) => {
         })
         .then((createdUser) => res.status(200).send({ data: createdUser }))
         .catch((err) => {
-          if (err.name === "ValidationError") {
+          if (err.name === 'ValidationError') {
             next(
               new BadRequestError(
-                `Введенные данные не прошли валидацию: ${err.message}`
-              )
+                `${messages.dataDidNotValidated}: ${err.message}`,
+              ),
             );
           }
 

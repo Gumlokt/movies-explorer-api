@@ -1,5 +1,7 @@
-const { CelebrateError } = require("celebrate");
+const { CelebrateError } = require('celebrate');
+const messages = require('../config/messages');
 
+// eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
   if (err instanceof CelebrateError) {
     const {
@@ -15,7 +17,8 @@ const errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).send({
     // проверяем статус и выставляем сообщение в зависимости от него
-    message: statusCode === 500 ? `Ошибка сервера: ${message}` : message,
+    message:
+      statusCode === 500 ? `${messages.serverError}: ${message}` : message,
   });
 };
 

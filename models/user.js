@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
-const stringValidator = require("validator");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const stringValidator = require('validator');
+const bcrypt = require('bcryptjs');
 
-const { UnauthorizedError } = require("../errors");
+const { UnauthorizedError } = require('../errors');
+const messages = require('../config/messages');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return stringValidator.isEmail(v);
       },
-      message: "Не корректный E-Mail",
+      message: messages.incorrectEmail,
     },
   },
   password: {
@@ -29,14 +30,15 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   // this будет являться экземпляром модели User, создаваемым в controllers/users.js
   return this.findOne({ email })
-    .select("+password")
+    .select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(
-          new UnauthorizedError("Неправильные E-Mail или пароль")
+          new UnauthorizedError(messages.incorrectEmailOrPass),
         );
       }
 
@@ -44,7 +46,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
           return Promise.reject(
-            new UnauthorizedError("Неправильные E-Mail или пароль")
+            new UnauthorizedError(messages.incorrectEmailOrPass),
           );
         }
 
@@ -53,4 +55,4 @@ userSchema.statics.findUserByCredentials = function (email, password) {
     });
 };
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);
