@@ -1,5 +1,8 @@
 const router = require("express").Router();
-const { authorizedRequestsValidation } = require("../middlewares/validation");
+const {
+  createMovieValidation,
+  removeMovieValidation,
+} = require("../middlewares/validation");
 
 const {
   getMovies,
@@ -7,10 +10,8 @@ const {
   removeMovie,
 } = require("../controllers/movies");
 
-router.get("/movies", getMovies); // not to validate
-
-router.post("/movies", authorizedRequestsValidation, createMovie);
-
-router.delete("/movies/:movieId", authorizedRequestsValidation, removeMovie);
+router.get("/movies", getMovies);
+router.post("/movies", createMovieValidation, createMovie);
+router.delete("/movies/:movieId", removeMovieValidation, removeMovie);
 
 module.exports = router;

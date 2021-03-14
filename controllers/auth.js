@@ -7,7 +7,6 @@ const User = require("../models/user");
 const { BadRequestError, ConflictError } = require("../errors");
 
 module.exports.createUser = (req, res, next) => {
-  // eslint-disable-next-line object-curly-newline
   const { name, email, password } = req.body;
 
   User.findOne({ email })

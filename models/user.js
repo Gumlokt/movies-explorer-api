@@ -7,6 +7,7 @@ const { UnauthorizedError } = require("../errors");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
     minlength: 2,
     maxlength: 30,
   },
@@ -24,12 +25,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 3,
     select: false,
   },
 });
 
-// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   // this будет являться экземпляром модели User, создаваемым в controllers/users.js
   return this.findOne({ email })

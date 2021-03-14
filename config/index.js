@@ -1,7 +1,19 @@
+const {
+  APP_PORT = "4000",
+
+  JWT_SECRET = "JWT-SECRET-KEY",
+  JWT_SECRET_TTL = "7d",
+
+  DB_HOST = "localhost",
+  DB_PORT = "27017",
+  DB_NAME = "moviehunterdb",
+} = process.env;
+
 const config = {
-  DEFAULT_PORT: 4000, // set to 4000 for development purposes and 3000 for production
-  SECRET_KEY: "MY-SECRET-KEY",
-  SECRET_TTL: "7d",
+  APP_PORT: APP_PORT,
+  DB_URL: `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`,
+  SECRET_KEY: JWT_SECRET,
+  SECRET_TTL: JWT_SECRET_TTL,
   allowedCors: [
     "http://localhost:3000",
     "http://213.159.211.244",

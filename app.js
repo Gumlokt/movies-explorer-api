@@ -3,52 +3,32 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-const usersRoutes = require("./routes/users");
-const moviesRoutes = require("./routes/movies");
+const helmet = require("helmet");
+const rateLimiter = require("./middlewares/rateLimiter");
 
-const { login, createUser } = require("./controllers/auth");
+const { APP_PORT, DB_URL } = require("./config");
 
-const auth = require("./middlewares/auth");
+const routes = require("./routes");
+
 const errorHandler = require("./middlewares/errorHandler");
-const {
-  unAuthorizedRequestsValidation,
-  checkAuthHeader,
-} = require("./middlewares/validation");
+
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const { corsOptions, cors } = require("./middlewares/cors");
 
-const { NotFoundError } = require("./errors");
-const { allowedCors, DEFAULT_PORT } = require("./config");
-
-// mongoose.connect("mongodb://localhost:27017/moviehunterdb", {
-mongoose.connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
+mongoose.connect(DB_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
 
-const { PORT = DEFAULT_PORT } = process.env;
 const app = express();
 
-app.options("*", (req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.set("Access-Control-Allow-Methods", "GET,PATCH,POST,DELETE");
-  res.send("ok");
-});
+app.use(rateLimiter);
+app.use(helmet());
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-  if (ALLOWED_CORS.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Origin, Authorization"
-    );
-    res.header("Access-Control-Allow-Methods", "GET,PATCH,POST,DELETE");
-  }
-  next();
-});
+app.options("*", corsOptions);
+app.use(cors);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -56,16 +36,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // логгер запросов
 app.use(requestLogger);
 
-app.post("/signin", unAuthorizedRequestsValidation, login);
-app.post("/signup", unAuthorizedRequestsValidation, createUser);
-
-// всем остальным роутам идущим ниже требуется авторизация
-app.use("/", checkAuthHeader, auth, usersRoutes);
-app.use("/", checkAuthHeader, auth, moviesRoutes);
-
-app.use("*", (req, res, next) => {
-  next(new NotFoundError("Запрашиваемый ресурс не найден"));
-});
+app.use(routes);
 
 // логгер ошибок
 app.use(errorLogger);
@@ -73,7 +44,6 @@ app.use(errorLogger);
 // централизованный обработчик ошибок
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
+app.listen(APP_PORT, () => {
+  console.log(`App listening on port ${APP_PORT}`);
 });

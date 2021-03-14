@@ -18,9 +18,10 @@ module.exports.createMovie = (req, res, next) => {
     description,
     image,
     trailer,
+    thumbnail,
+    movieId,
     nameRU,
     nameEN,
-    thumbnail,
   } = req.body;
 
   Movie.create({
@@ -31,25 +32,23 @@ module.exports.createMovie = (req, res, next) => {
     description,
     image,
     trailer,
+    thumbnail,
+    movieId,
     nameRU,
     nameEN,
-    thumbnail,
     owner: req.user._id,
   })
-    .then(
-      (movie) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        Movie.findById(movie._id)
-          .populate(["owner"])
-          .orFail(new NotFoundError("Фильм с указанным ID отсутствует"))
-          .catch((err) => {
-            if (err.name === "CastError") {
-              next(new BadRequestError("Указан не валидный ID фильма"));
-            }
+    .then((movie) =>
+      Movie.findById(movie._id)
+        .populate(["owner"])
+        .orFail(new NotFoundError("Фильм с указанным ID отсутствует"))
+        .catch((err) => {
+          if (err.name === "CastError") {
+            next(new BadRequestError("Указан не валидный ID фильма"));
+          }
 
-            next(err);
-          })
-      // eslint-disable-next-line function-paren-newline
+          next(err);
+        })
     )
     .then((movie) => res.status(200).send(movie))
     .catch((err) => {
