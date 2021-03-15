@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const helmet = require('helmet');
@@ -30,8 +29,8 @@ app.use(helmet());
 app.options('*', corsOptions);
 app.use(cors);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // логгер запросов
 app.use(requestLogger);

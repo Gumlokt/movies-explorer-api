@@ -1,7 +1,6 @@
 const { CelebrateError } = require('celebrate');
 const messages = require('../config/messages');
 
-// eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
   if (err instanceof CelebrateError) {
     const {
